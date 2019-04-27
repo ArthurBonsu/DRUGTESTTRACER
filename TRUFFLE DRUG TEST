@@ -1,6 +1,6 @@
 var EscrowComplianceCecker = artifacts.require("EscrowComplianceCecker");
 const assert = require("chai").assert;
-const truffleAssert = require('truffle-assertions');
+ truffleAssert = require('truffle-assertions');
 
 contract('EscrowComplianceCecker', (accounts) => { 
   var EscrowInstance;
@@ -14,48 +14,56 @@ contract('EscrowComplianceCecker', (accounts) => {
   it("it initializes the candidates with the correct values", function() {
     return EscrowComplianceCecker.deployed().then(function(instance) {
       EscrowInstance = instance;
+      let eventsendmyescrow = instance.pleasesendmyescrow();
       let amount =19;
       let amountrequiredo = web3.utils.toWei(amount.toString(),'ether');
       let amountsatisfied = web3.utils.toBN(amountrequiredo);
        truffleAssert.reverts(
       
-        instance.sendescrow(accounts[0], web3.utils.fromAscii("peeman"),amountsatisfied)).then(function(result){
-          assert.equal(result.logs.length, 1, "an event was triggered");
-      assert.equal(result.logs[0].event, "votedEvent", "the event type is correct");
-      assert.equal(result.logs[0].args._amountsatisfied.toNumber(), amountsatisfied, "the number is 19");
-        
-
-        });
+      instance.sendescrow(accounts[0], web3.utils.fromAscii("peeman"),amountsatisfied)).then(function(result){
+        instance.pleasesendmyescrow({
+          filter: {},
+          fromBlock: 0,
+          toBlock: 'latest'
+          }, function(error, event){ console.log(event); })
+      
     });
  
 
-    
+   
    
 
 
  
   });
+});
 
   it("it checks to see amount sent", function() {
+
     return EscrowComplianceCecker.deployed().then(function(instance) {
+     let event = instance.pleasesendmyescrow();
       EscrowInstance = instance;
       let amount =19;
       let amountrequiredo = web3.utils.toWei(amount.toString(),'ether');
       let amountsatisfied = web3.utils.toBN(amountrequiredo);
        truffleAssert.reverts(
       
-        instance.Sent(accounts[0],0xfd2C3e27BfACcf842424e48dC72cb18ba48E9457 ,amountsatisfied)).then(function(result){
-          assert.equal(result.logs.length, 1, "an event was triggered");
-      assert.equal(result.logs[0].event, "votedEvent", "the event type is correct");
-      assert.equal(result.logs[0].args._amountsatisfied.toNumber(), amountsatisfied, "the number is 19");
-        
-                    return result;
+       instance.Sent({from: accounts[0],to: instance.escrowownaddress(),value: amountsatisfied})).then(function(result){
+          return amount;
+       
         });
+  
+    
     });
  
+  });
 
 
- /* it("allows a voter to cast a vote", function() {
+  
+  
+ 
+ 
+  /* it("allows a voter to cast a vote", function() {
     return Election.deployed().then(function(instance) {
       electionInstance = instance;
       candidateId = 1;
@@ -117,5 +125,7 @@ contract('EscrowComplianceCecker', (accounts) => {
 
 */
 
-});
+
+
+
 });
