@@ -1,0 +1,94 @@
+const Tx =require('ethereumjs-tx')
+const Web3 = require('web3')
+const  Personal = ('web3-eth-personal');
+
+const BigNumber = require('bignumber.js');
+
+var  web3 = new Web3('https://ropsten.infura.io/v3/de92f2791cfa4b2bb36aa86ae5b78137');
+
+//var web3 =
+//new Web3.providers.HttpProvider("http://127.0.0.1:7545");
+//const net = require('net');
+//web3 = new Web3(Web3.givenProvider);
+  
+var escrowcompliancececkerContractABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"proposals","outputs":[{"name":"escrowparticipantaddress","type":"address"},{"name":"escrowparticipantname","type":"bytes32"},{"name":"escrowparticipantsinitialamountputin","type":"uint256"},{"name":"escrowparticipanttimestamp","type":"bytes32"},{"name":"escrowparticipantcount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"escrowbalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"balanceamount","type":"uint256"},{"name":"escrowbalancenow","type":"uint256"}],"name":"withdraw","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"escrowownaddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"yourcurrentowner","type":"address"},{"name":"amount","type":"uint256"},{"name":"nonce","type":"uint256"},{"name":"signature","type":"bytes"},{"name":"receipientaddress","type":"address"}],"name":"claimPayment","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"balances","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"escrowparticipator","type":"address"},{"name":"escrowparticipatorname","type":"bytes32"},{"name":"escrowparticipatoramount","type":"uint256"}],"name":"sendescrow","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"donator","type":"address"},{"name":"receipient","type":"address"},{"name":"amount","type":"uint256"}],"name":"deposit","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"thereceivertopay","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"punishings","outputs":[{"name":"escrowvictimaddress","type":"address"},{"name":"escrowvictimmame","type":"bytes32"},{"name":"escrowvictimmoney","type":"uint256"},{"name":"escrowvictimtimestamp","type":"bytes32"},{"name":"escrowvictimcount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"amountrequired","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"thereceivertopaybalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_escrowvictimaddress","type":"address"},{"name":"_escrowvictimmame","type":"bytes32"},{"name":"_escrowvictimmoney","type":"uint256"}],"name":"returnbackescrow","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"wehaveescrowownaddress","type":"address"},{"indexed":false,"name":"wehaveescrowparticipator","type":"address"},{"indexed":false,"name":"wehaveescrowparticipatoramount","type":"uint256"}],"name":"pleasesendmyescrow","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"from","type":"address"},{"indexed":false,"name":"receipientaddress","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"Sent","type":"event"}];
+
+
+var industryContractABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"proposals","outputs":[{"name":"escrowparticipantaddress","type":"address"},{"name":"escrowparticipantname","type":"bytes32"},{"name":"escrowparticipantsinitialamountputin","type":"uint256"},{"name":"escrowparticipanttimestamp","type":"bytes32"},{"name":"escrowparticipantcount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"escrowbalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"processingstructureses","outputs":[{"name":"location","type":"bytes32"},{"name":"hasdrug","type":"bool"},{"name":"escrowamount","type":"uint256"},{"name":"lastdestination","type":"address"},{"name":"justhandedoveraddres","type":"address"},{"name":"RFIDofthisdrug","type":"bytes32"},{"name":"manufacturerofdrugstobesent","type":"address"},{"name":"currentpersoncount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"escrowparticipator","type":"address"},{"name":"escrowparticipatorname","type":"bytes32"},{"name":"escrowparticipatoramount","type":"uint256"},{"name":"v","type":"uint256"}],"name":"sendescrows","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"enroller","type":"address"},{"name":"hasenrolled","type":"bool"}],"name":"hasbeenenrolled","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_receiver","type":"address"},{"name":"_lastdestination","type":"address"},{"name":"s","type":"uint256"}],"name":"checklastdestination","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"newName","type":"bytes32"},{"name":"oldName","type":"bytes32"},{"name":"oldAddress","type":"address"},{"name":"newAddress","type":"address"},{"name":"_jushandedoveraddress","type":"address"},{"name":"manufactureraddress","type":"address"},{"name":"_RFID","type":"bytes32"},{"name":"e","type":"uint256"},{"name":"haspackage","type":"bool"},{"name":"f","type":"uint256"},{"name":"_currentownerprocessingfee","type":"uint256"}],"name":"changecurrentownership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"balanceamount","type":"uint256"},{"name":"escrowbalancenow","type":"uint256"}],"name":"withdraw","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"escrowownaddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"yourcurrentowner","type":"address"},{"name":"amount","type":"uint256"},{"name":"nonce","type":"uint256"},{"name":"signature","type":"bytes"},{"name":"receipientaddress","type":"address"}],"name":"claimPayment","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"balances","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"escrowparticipator","type":"address"},{"name":"escrowparticipatorname","type":"bytes32"},{"name":"escrowparticipatoramount","type":"uint256"}],"name":"sendescrow","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"donator","type":"address"},{"name":"receipient","type":"address"},{"name":"amount","type":"uint256"}],"name":"deposit","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"mybigrole","type":"bytes32"},{"name":"mygreatbalance","type":"uint256"},{"name":"mynicelocation","type":"bytes32"},{"name":"ihavethisdrug","type":"bool"},{"name":"ihaveescrowamount","type":"uint256"},{"name":"ourlastdestination","type":"address"},{"name":"lookmyjustendedaddress","type":"address"}],"name":"ObtainProcessingEntityDetails","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"procedures","outputs":[{"name":"currentproces","type":"address"},{"name":"timestamp","type":"bytes32"},{"name":"drugname","type":"bytes32"},{"name":"numberofProcessingEntities","type":"uint256"},{"name":"location","type":"bytes32"},{"name":"receipient","type":"address"},{"name":"escrowvalue","type":"uint256"},{"name":"numOfProcesses","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"thereceivertopay","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"numOfDrugCounts","type":"uint256"},{"name":"_lastdestination","type":"address"}],"name":"endphases","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"punishings","outputs":[{"name":"escrowvictimaddress","type":"address"},{"name":"escrowvictimmame","type":"bytes32"},{"name":"escrowvictimmoney","type":"uint256"},{"name":"escrowvictimtimestamp","type":"bytes32"},{"name":"escrowvictimcount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_sender","type":"address"},{"name":"_sendername","type":"bytes32"},{"name":"_receipient","type":"address"},{"name":"receipientname","type":"bytes32"},{"name":"_RFID","type":"bytes32"},{"name":"_lastdestination","type":"address"},{"name":"processesnumber","type":"uint256"}],"name":"newProcessingPhase","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"self","outputs":[{"name":"manufacturer","type":"address"},{"name":"currentdrugpossessor","type":"address"},{"name":"RFID","type":"bytes32"},{"name":"drugname","type":"bytes32"},{"name":"cost","type":"uint256"},{"name":"temperature","type":"int256"},{"name":"concentration","type":"int256"},{"name":"location","type":"bytes32"},{"name":"drugquality","type":"bytes32"},{"name":"numOfDrugCount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"fellowowner","type":"address"},{"name":"fellowreceiver","type":"address"},{"name":"fellowpublickey","type":"uint256"},{"name":"fellowcurrentownername","type":"bytes32"},{"name":"fellowreceivername","type":"bytes32"},{"name":"fellowcurrentprocessingfee","type":"uint256"}],"name":"ObtainProcessingEntity","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"procent","outputs":[{"name":"currentowner","type":"address"},{"name":"receiver","type":"address"},{"name":"publickey","type":"uint256"},{"name":"currentownername","type":"bytes32"},{"name":"receivername","type":"bytes32"},{"name":"currentownerprocessingfee","type":"uint256"},{"name":"role","type":"bytes32"},{"name":"balance","type":"uint256"},{"name":"RFIDofdrugtobesent","type":"bytes32"},{"name":"currentownerscount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"amountrequired","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"escrowvalue","type":"uint256"},{"name":"balancers","type":"uint256"}],"name":"createEscrow","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"thereceivertopaybalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_escrowvictimaddress","type":"address"},{"name":"_escrowvictimmame","type":"bytes32"},{"name":"_escrowvictimmoney","type":"uint256"}],"name":"returnbackescrow","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"iamthecurrentdrugprocessor","type":"address"},{"name":"thisisgoingtobeRFID","type":"bytes32"},{"name":"thisismygreatestcost","type":"uint256"},{"name":"tellmethedrugme","type":"bytes32"}],"name":"ObtainDrugInfo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"theRFIDofthisdrug","type":"bytes32"},{"name":"manufacturerofdrugimustsend","type":"address"},{"name":"iamcountingcurrentowners","type":"uint256"}],"name":"ObtainProcessingEntityStatus","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"procenter","outputs":[{"name":"currentowner","type":"address"},{"name":"receiver","type":"address"},{"name":"publickey","type":"uint256"},{"name":"currentownername","type":"bytes32"},{"name":"receivername","type":"bytes32"},{"name":"currentownerprocessingfee","type":"uint256"},{"name":"role","type":"bytes32"},{"name":"balance","type":"uint256"},{"name":"RFIDofdrugtobesent","type":"bytes32"},{"name":"currentownerscount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"thetemperature","type":"int256"},{"name":"theconcentration","type":"int256"},{"name":"thegreatlocation","type":"bytes32"},{"name":"thenumberofcountihave","type":"uint256"},{"name":"themanufacturersihave","type":"address"},{"name":"thedrugqualityihave","type":"bytes32"}],"name":"ObtainDrugInfoAdditional","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_sender","type":"address"},{"indexed":false,"name":"_sendername","type":"bytes32"},{"indexed":false,"name":"_receipient","type":"address"},{"indexed":false,"name":"receipientname","type":"bytes32"},{"indexed":false,"name":"_RFID","type":"bytes32"},{"indexed":false,"name":"_lastdestination","type":"address"},{"indexed":false,"name":"processesnumber","type":"uint256"}],"name":"whatnewProcessingPhase","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"wehaveescrowownaddress","type":"address"},{"indexed":false,"name":"wehaveescrowparticipator","type":"address"},{"indexed":false,"name":"wehaveescrowparticipatoramount","type":"uint256"}],"name":"pleasesendmyescrow","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"from","type":"address"},{"indexed":false,"name":"receipientaddress","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"Sent","type":"event"}];
+
+  
+//var accountToSubmit = web3.eth.personal.unlockAccount(web3.eth.accounts[0],'',300);
+//var accountToSubmits = web3.eth.personal.unlockAccount(web3.eth.accounts[1],'',300);
+//var accountToSubmitss = web3.eth.personal.unlockAccount(web3.eth.accounts[2],'',300);
+
+
+var contractAddress = '0x74b27e7de92d52ab360f2876948820093a8c15e1';
+console.log(contractAddress);
+var IndustrycontractAddress = '0xa4f83bc0e55e20bf93f25bb46c745d24af73593f';
+var fromAddress = '0x91796AA285Cc5770fEd2f1B496b411f5BE3ED9D4';
+
+console.log(contractAddress);
+console.log(IndustrycontractAddress);
+
+  var  EscrowContract = new web3.eth.Contract(escrowcompliancececkerContractABI, contractAddress);
+
+  var  IndustryContract = new  web3.eth.Contract(industryContractABI, IndustrycontractAddress);
+  var amount = 10
+  var process = web3.utils.toBN(10).toString()
+  
+        
+var escrowcontracts =  EscrowContract.methods.sendescrow('0x91796AA285Cc5770fEd2f1B496b411f5BE3ED9D4', web3.utils.fromAscii("peeman"),process).call((err, result) =>{ console.log(escrowcontracts)} );
+
+
+// var EscrowInstance = EscrowContract.at(contractAddress);
+ // var MyIndustryInstance = IndustryContract.at(IndustrycontractAddress);
+
+   
+
+
+const account1 = '0x91796AA285Cc5770fEd2f1B496b411f5BE3ED9D4';
+const account2 = '0xdE27Eaf0FBE58cAF3B932dF0f414584bf2D15000';
+const account3 = '0x542049c01139F177DfCF1f7Abe6898c190667116';
+ console.log(account1);
+
+
+ /*
+const privateKey1 =  Buffer.from('19abdbdfb8806d8e406e768f08857dc8c1f58559c7782e7192c5f02f57a1144d', 'hex');
+const privateKey2 =  Buffer.from('f2ead8c56d602eadc95a6178dc70d8c8f7eff2eb05e4553e6ffea1b19907f7b4', 'hex');
+const privateKey3 =  Buffer.from('2779d3a558b48e05be810aab8446d84bad9ce2e1ab9f319138bb846588a87cce', 'hex');
+
+  */  
+
+
+
+
+  //  var amountrequiredo = web3.utils.fromWei(amount.toString(), "ether");
+  
+    
+ 
+
+ var amazing =  IndustryContract.methods.newProcessingPhase( '0x91796AA285Cc5770fEd2f1B496b411f5BE3ED9D4', web3.utils.fromAscii("peeman"),'0xdE27Eaf0FBE58cAF3B932dF0f414584bf2D15000',web3.utils.fromAscii("michael"),web3.utils.fromAscii("mnbbm"),'0x542049c01139F177DfCF1f7Abe6898c190667116', process ).call((err, result) => {console.log(result)});
+ console.log(amazing);
+        
+          // console.log(web3.fromWei(web3.toBigNumber(thisresult.toFixed()), 'ether'));
+       
+    web3.eth.getBlock(
+      5626866 ).then(( block) => {
+        console.log({
+        blockHash: block.hash,
+        blockNumber: block.number,
+    })
+})
+
+web3.eth.getBlock('latest').then((console.log))
+
+web3.eth.getBalance(account1, (err, bal) => {
+	console.log('account 1 balance', web3.utils.fromWei(bal, 'ether'))
+})
+
+
+web3.eth.getBalance(account2, (err, bal) => {
+	console.log('account 2 balance', web3.utils.fromWei(bal, 'ether'))
+})
+       ;
+      
