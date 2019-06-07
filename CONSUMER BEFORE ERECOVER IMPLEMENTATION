@@ -1,0 +1,157 @@
+pragma solidity >=0.4.0 <0.6.0;
+ 
+
+ import "./EscrowComplianceCecker.sol";
+ import  "./Industry.sol";
+ contract Consumer is EscrowComplianceCecker  {
+          uint  i; 
+      
+       struct Buyer {
+       bytes32  customername;
+        uint  customerage;
+       uint price;
+       uint thecustomerscount;
+       address payable consumeraddress;
+       bytes32 RFIDS;
+    
+      mapping (address => Buyer[]) buyers;
+      mapping (bytes32 => Buyer[]) somebuyer;
+
+       }
+       
+        Buyer[] public consumerstore; 
+        Buyer consumer;
+       
+       
+   
+     function getConsumerdetails(address payable _consumeraddress) public returns(address payable consumeraddressretrieved, bytes32 customerretrievedname, uint customerretrievedage)   {
+        i = consumer.thecustomerscount;
+         
+         consumer.consumeraddress = _consumeraddress;
+        
+            
+           consumer.buyers[consumer.consumeraddress][i].consumeraddress =  consumer.consumeraddress;
+       consumer.buyers[consumer.consumeraddress][i].customername =customerretrievedname ;
+       consumer.buyers[consumer.consumeraddress][i].customerage;
+             
+                   require( consumer.buyers[consumer.consumeraddress][i].consumeraddress  ==  consumer.consumeraddress);
+         
+         return (  consumer.buyers[consumer.consumeraddress][i].consumeraddress,consumer.buyers[consumer.consumeraddress][i].customername,
+                  consumer.buyers[consumer.consumeraddress][i].customerage
+           );
+         
+         
+     }
+        
+       function storeconsumerstuff(address payable _consumeraddresses, bytes32 _customernamess, uint _customeragess, uint priceshere, bytes32 RRFIDS  ) public {
+         
+           i = consumer.thecustomerscount++;
+         
+         consumer.consumeraddress = _consumeraddresses;
+         consumer.customername = _customernamess;
+         consumer.customerage =  _customeragess;
+         consumer.price =priceshere;
+         consumer.RFIDS =RRFIDS;  
+         
+          consumer.somebuyer[consumer.RFIDS][i].consumeraddress = consumer.consumeraddress;
+              consumer.somebuyer[ consumer.RFIDS][i].customername = consumer.customername;
+                  consumer.somebuyer[ consumer.RFIDS][i].customerage =consumer.customerage;
+                consumer.somebuyer[ consumer.RFIDS][i].price =priceshere;
+                  consumer.somebuyer[ consumer.RFIDS][i].RFIDS= RRFIDS;
+           
+     
+     
+     
+     
+     consumerstore.push(Buyer(
+     {
+      customername:  consumer.somebuyer[ consumer.RFIDS][i].customername,
+      customerage: consumer.somebuyer[ consumer.RFIDS][i].customerage,
+      price:  consumer.somebuyer[consumer.RFIDS][i].price,
+      thecustomerscount: consumer.somebuyer[consumer.RFIDS][i].thecustomerscount,
+        consumeraddress:  consumer.somebuyer[consumer.RFIDS][i].consumeraddress,
+             RFIDS: consumer.somebuyer[ consumer.RFIDS][i].RFIDS
+    
+   
+                           
+ }));  
+     
+     
+      
+  } 
+       
+     
+        function drugbought(address payable _consumeraddr, bytes32 _customernam, bytes32 drugsRFID ) public returns (address payable suchacustomer, bytes32 customername, bytes32 thedrugandRFID, uint priceofdrug) {
+          i = consumer. thecustomerscount++;
+         
+           consumer.consumeraddress = _consumeraddr;
+         consumer.customername = _customernam;
+       
+         consumer.price;
+         consumer.RFIDS =drugsRFID;  
+           
+             consumer.somebuyer[ consumer.RFIDS][i].consumeraddress;
+             consumer.somebuyer[ consumer.RFIDS][i].customername ;
+             consumer.somebuyer[ consumer.RFIDS][i].price;
+                  
+                   consumer.somebuyer[ consumer.RFIDS][i].RFIDS;
+                  
+                  
+                   
+                   require(consumer.buyers[consumer.consumeraddress][i].consumeraddress ==  consumer.consumeraddress ||  consumer.somebuyer[ consumer.RFIDS][i].RFIDS ==consumer.RFIDS);
+         
+         return ( consumer.buyers[consumer.consumeraddress][i].consumeraddress, consumer.somebuyer[ consumer.RFIDS][i].customername , consumer.somebuyer[ consumer.RFIDS][i].RFIDS,   consumer.somebuyer[ consumer.RFIDS][i].price
+           );
+         
+            
+        }
+    
+  /*   function verify(bytes32 _RFID)  public{
+           uint vry;
+          Industry industrye = Industry(vry);
+
+
+          industrye.providecustomerpermission( _RFID);
+     }
+     
+   */
+
+ function  sendescrow(address payable escrowparticipator, bytes32 escrowparticipatorname, uint escrowparticipatoramount) public payable {
+          EscrowComplianceCecker.sendescrow( escrowparticipator,  escrowparticipatorname, escrowparticipatoramount);
+      }
+      
+      
+      
+      function returnbackescrow (address payable _escrowvictimaddress, bytes32 _escrowvictimmame, uint _escrowvictimmoney) public payable{
+             EscrowComplianceCecker.returnbackescrow( _escrowvictimaddress,  _escrowvictimmame,  _escrowvictimmoney)    ;
+      }
+      
+      function deposit(address payable  donator, address payable receipient, uint amount) public payable {
+            EscrowComplianceCecker.deposit( donator,  receipient,  amount);   
+      }
+   
+function withdraw(uint balanceamount, uint escrowbalancenow) public payable  {
+         EscrowComplianceCecker.withdraw(balanceamount,escrowbalancenow);
+         
+          }
+     
+     function balances() public view returns(uint) {
+          EscrowComplianceCecker.balances(); 
+     }
+     
+     
+  function claimPayment(address payable  yourcurrentowner, uint256 amount, uint256 nonce, bytes memory signature,address payable receipientaddress)
+public payable {
+    EscrowComplianceCecker.claimPayment(yourcurrentowner, amount, nonce, signature, receipientaddress);
+    
+}
+
+
+
+}
+
+                                                                                             //#SignedByGod
+
+
+
+
